@@ -5,19 +5,6 @@ buildscript {
     dependencies {
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0'
     }
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-        }
-    }
-}
-
-allprojects {
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-        }
-    }
 }
 
 
@@ -167,6 +154,7 @@ configurations {
     options.deprecation = false
 }*/
 tasks.withType(JavaCompile) {
+    options.warnings = false
     options.compilerArgs << "-Xlint:deprecation"
     options.encoding = "UTF-8"
 }
