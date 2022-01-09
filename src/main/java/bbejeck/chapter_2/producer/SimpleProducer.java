@@ -2,11 +2,7 @@ package bbejeck.chapter_2.producer;
 
 import bbejeck.chapter_2.partitioner.PurchaseKeyPartitioner;
 import bbejeck.model.PurchaseKey;
-import org.apache.kafka.clients.producer.Callback;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.producer.*;
 
 import java.util.Date;
 import java.util.Properties;
@@ -26,8 +22,10 @@ public class SimpleProducer {
 
         Properties properties = new Properties();
         properties.put("bootstrap.servers", "localhost:9092");
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        //properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.springframework.kafka.support.serializer.JsonSerializer");
+        //properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.springframework.kafka.support.serializer.JsonSerializer");
         properties.put("acks", "1");
         properties.put("retries", "3");
         properties.put("compression.type", "snappy");
@@ -37,7 +35,7 @@ public class SimpleProducer {
         PurchaseKey key = new PurchaseKey("12334568", new Date());
 
         try(Producer<PurchaseKey, String> producer = new KafkaProducer<>(properties)) {
-            ProducerRecord<PurchaseKey, String> record = new ProducerRecord<>("some-topic", key, "value");
+            ProducerRecord<PurchaseKey, String> record = new ProducerRecord<>("some-topic", key, "{\"item\":\"book\",\"price\":\"23.9\"}");
 
             Callback callback = (metadata, exception) -> {
                 if (exception != null) {

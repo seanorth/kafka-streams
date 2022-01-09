@@ -1,9 +1,7 @@
 package bbejeck.chapter_2.consumer;
 
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.*;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.Collections;
 import java.util.Properties;
@@ -40,7 +38,7 @@ public class ThreadedConsumerExample {
             Consumer<String, String> consumer = null;
             try {
                 consumer = new KafkaConsumer<>(properties);
-                consumer.subscribe(Collections.singletonList("test-topic"));
+                consumer.subscribe(Collections.singletonList("some-topic"));
                 while (!doneConsuming) {
                     ConsumerRecords<String, String> records = consumer.poll(5000);
                     for (ConsumerRecord<String, String> record : records) {
@@ -74,8 +72,12 @@ public class ThreadedConsumerExample {
         properties.put("auto.offset.reset", "earliest");
         properties.put("enable.auto.commit", "true");
         properties.put("auto.commit.interval.ms", "3000");
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        //properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,"org.springframework.kafka.support.serializer.JsonDeserializer");
+        //properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,"org.springframework.kafka.support.serializer.JsonDeserializer");
+        properties.put(JsonDeserializer.TRUSTED_PACKAGES,"bbejeck.model");
 
         return properties;
 
@@ -86,9 +88,10 @@ public class ThreadedConsumerExample {
      */
 
     public static void main(String[] args) throws InterruptedException {
+
         ThreadedConsumerExample consumerExample = new ThreadedConsumerExample(2);
         consumerExample.startConsuming();
-        Thread.sleep(60000); //Run for one minute
+        Thread.sleep(6000); //Run for one minute
         consumerExample.stopConsuming();
     }
 

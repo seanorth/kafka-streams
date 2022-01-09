@@ -14,6 +14,9 @@ public class PurchaseKey {
         this.transactionDate = transactionDate;
     }
 
+    public PurchaseKey() {
+    }
+
     public String getCustomerId() {
         return customerId;
     }
